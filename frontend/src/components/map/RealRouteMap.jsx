@@ -243,7 +243,12 @@ export default function RealRouteMap({ onStatsChange }) {
           fillLevel: r.fill_level || 100,
           timestamp: r.timestamp
         }));
-        setStops(newStops);
+        setStops(prev => {
+          if (JSON.stringify(prev) === JSON.stringify(newStops)) {
+            return prev; // Keeps the exact same reference, avoiding re-renders
+          }
+          return newStops;
+        });
       } catch (err) {
         console.error("Failed to fetch requests", err);
       }
