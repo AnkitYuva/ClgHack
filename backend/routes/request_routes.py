@@ -29,15 +29,6 @@ def get_requests():
     conn.close()
 
     requests = []
-    has_image_col = False
-    try:
-        conn = get_db()
-        conn.execute("SELECT image_path FROM pickup_requests LIMIT 1")
-        has_image_col = True
-        conn.close()
-    except:
-        pass
-
     for r in rows:
         req_dict = {
             "id": r["id"],
@@ -50,7 +41,7 @@ def get_requests():
             "fill_level": r["fill_level"],
             "timestamp": r["timestamp"]
         }
-        if has_image_col:
+        if "image_path" in r.keys() and r["image_path"]:
             req_dict["image_path"] = r["image_path"]
         requests.append(req_dict)
     return jsonify(requests)

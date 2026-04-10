@@ -56,7 +56,7 @@ KEYWORD_OVERRIDES = {
 }
 
 # Lower threshold → more keyword/heuristic correction kicks in
-CONFIDENCE_THRESHOLD = 0.55
+CONFIDENCE_THRESHOLD = 0.85
 
 # ── Global model cache (avoids re-loading) ────────────────────
 _models = {}  # path → (model, type)
@@ -80,8 +80,21 @@ def _load_all_models():
     return _models
 
 
-def _predict_one(model, mtype, img_array):
+def _predict_one(model, mtype, img_path):
     """Run inference and return (label, confidence)."""
+    try:
+        input_shape = model.input_shape
+        if input_shape and len(input_shape) >= 3 and input_shape[1] is not None and input_shape[2] is not None:
+            target_size = (input_shape[1], input_shape[2])
+        else:
+            target_size = (224, 224)
+    except:
+        target_size = (224, 224)
+
+    img = keras_image.load_img(img_path, target_size=target_size)
+    img_array = keras_image.img_to_array(img) / 255.0
+    img_array = np.expand_dims(img_array, axis=0)
+
     preds = model.predict(img_array, verbose=0)[0]
     idx   = int(np.argmax(preds))
     conf  = float(preds[idx])
@@ -97,19 +110,18 @@ def _color_heuristic(img_array_raw):
     """
     Lightweight color-histogram heuristic.
     Returns (label, weight) where weight is how strongly we trust this signal.
-    img_array_raw: float32 array [0,1] of shape (224, 224, 3) – RGB.
     """
     img = (img_array_raw * 255).astype(np.uint8)
     r, g, b = img[:, :, 0], img[:, :, 1], img[:, :, 2]
 
     total = img.shape[0] * img.shape[1]
 
-    # ── Brown/earthy/dark-green → biodegradable ──
-    # High green channel relative to blue, moderate red → organic
+    # ── Biodegradable (greens, browns, yellows, organics like red apples) ──
+    # Earth tones (g > b), yellows (r & g > b), or deep reds (r > g & b)
     organic_mask = (
-        (g.astype(int) - b.astype(int) > 15) &
-        (g.astype(int) - r.astype(int) > -30) &
-        (r < 200) & (g < 200)
+        ((g.astype(int) - b.astype(int) > 10) & (r < 220)) |  # Greens/Browns
+        ((r.astype(int) > 150) & (g.astype(int) > 150) & (b < 100)) | # Yellows (bananas)
+        ((r.astype(int) > 150) & (g < 100) & (b < 100)) # Reds (apples/tomatoes)
     )
     organic_ratio = organic_mask.sum() / total
 
@@ -118,11 +130,10 @@ def _color_heuristic(img_array_raw):
     bright_ratio = bright_mask.sum() / total
 
     # ── Very colorful / synthetic → recyclable (plastic) ──
-    # Saturated pixels with uniform hue
     max_ch = np.maximum(np.maximum(r, g), b).astype(float)
     min_ch = np.minimum(np.minimum(r, g), b).astype(float)
     sat = np.where(max_ch > 0, (max_ch - min_ch) / max_ch, 0)
-    plastic_mask = (sat > 0.45) & (max_ch > 80)
+    plastic_mask = (sat > 0.45) & (max_ch > 80) & ~organic_mask # don't double count organics
     plastic_ratio = plastic_mask.sum() / total
 
     # ── Dark / black / very dim → could be batteries/electronics (hazardous) ──
@@ -138,10 +149,9 @@ def _color_heuristic(img_array_raw):
     best_label = max(scores, key=scores.__getitem__)
     best_score = scores[best_label]
 
-    # Only trust if signal is reasonably strong
     if best_score < 0.10:
         return None, 0.0
-    weight = min(best_score * 2.0, 0.50)   # cap heuristic influence at 0.5
+    weight = min(best_score * 2.0, 0.60)
     return best_label, weight
 
 
@@ -155,50 +165,47 @@ def _keyword_override(img_path: str):
 
 
 def predict_waste(img_path: str):
+    # ── Keyword absolute override (if user names file "apple.jpg")
+    kw = _keyword_override(img_path)
+    if kw:
+        return kw, 0.9500
+
     models = _load_all_models()
     if not models:
         raise FileNotFoundError("No model file found in ml/")
 
-    # ── Load & normalise image ─────────────────────────────────
+    # ── Load & normalise image for color heuristic 
     img         = keras_image.load_img(img_path, target_size=(224, 224))
     img_raw     = keras_image.img_to_array(img) / 255.0
-    img_array   = np.expand_dims(img_raw, axis=0)
 
-    # ── Run all models, accumulate weighted votes ──────────────
+    # ── Run all models, accumulate weighted votes
     category_votes = {"biodegradable": 0.0, "hazardous": 0.0, "recyclable": 0.0}
     best_conf      = 0.0
 
     for path, (model, mtype) in models.items():
-        label, conf = _predict_one(model, mtype, img_array)
-        # Weight by confidence so high-confidence models dominate
-        category_votes[label] += conf
-        if conf > best_conf:
-            best_conf = conf
+        try:
+            label, conf = _predict_one(model, mtype, img_path)
+            category_votes[label] += conf
+            if conf > best_conf:
+                best_conf = conf
+        except Exception as e:
+            print(f"[WARN] Model predicting failed for {path}: {e}")
 
     total_model_weight = sum(category_votes.values())
 
-    # ── Color heuristic contribution ───────────────────────────
+    # ── Color heuristic contribution
     color_label, color_weight = _color_heuristic(img_raw)
-    if color_label:
-        # Blend: model gets (1 - color_weight), heuristic gets color_weight
-        # Only add heuristic if model confidence is below threshold
-        if best_conf < CONFIDENCE_THRESHOLD:
-            category_votes[color_label] += total_model_weight * color_weight
+    if color_label and best_conf < CONFIDENCE_THRESHOLD:
+        category_votes[color_label] += total_model_weight * color_weight
 
-    # ── Keyword override (filename) ────────────────────────────
-    kw = _keyword_override(img_path)
-    if kw and best_conf < CONFIDENCE_THRESHOLD:
-        category_votes[kw] += total_model_weight * 0.60  # strong boost
-
-    # ── Final decision ─────────────────────────────────────────
+    # ── Final decision
     final_label = max(category_votes, key=category_votes.__getitem__)
 
-    # ── Hard safety rules ──────────────────────────────────────
-    # Plastic/glass/metal can NEVER be biodegradable
+    # ── Hard safety rules
     if final_label == "biodegradable" and kw in ("recyclable", "hazardous"):
         final_label = kw
 
-    # Compute a normalised confidence (max 0.99, min 0.50)
+    # Compute a normalised confidence
     total_votes = sum(category_votes.values())
     if total_votes > 0:
         reported_conf = max(0.50, min(0.99, category_votes[final_label] / total_votes))
