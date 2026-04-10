@@ -79,13 +79,13 @@ export default function WasteClassification() {
               onDrop={handleDrop}
               onClick={() => inputRef.current.click()}
               style={{
-                border: `2px dashed ${dragOver ? "#22c55e" : "rgba(255,255,255,0.12)"}`,
+                border: `2px dashed ${dragOver ? "#10B981" : "#CBD5E1"}`,
                 borderRadius: "1.25rem",
                 padding: "2rem",
                 textAlign: "center",
                 cursor: "pointer",
                 transition: "all 0.25s",
-                background: dragOver ? "rgba(34,197,94,0.04)" : "rgba(255,255,255,0.02)",
+                background: dragOver ? "rgba(16,185,129,0.05)" : "#F8FAFC",
                 minHeight: preview ? "auto" : "200px",
                 display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
               }}
@@ -98,9 +98,9 @@ export default function WasteClassification() {
                 />
               ) : (
                 <>
-                  <Upload size={36} color="#22c55e" style={{ marginBottom: "0.75rem", opacity: 0.8 }} />
-                  <p style={{ color: "#94a3b8", fontSize: "0.88rem" }}>Drop image here or <span style={{ color: "#22c55e", fontWeight: 600 }}>browse</span></p>
-                  <p style={{ color: "#475569", fontSize: "0.72rem", marginTop: "0.3rem" }}>PNG, JPG, WEBP supported</p>
+                  <Upload size={36} color="#10B981" style={{ marginBottom: "0.75rem", opacity: 0.8 }} />
+                  <p style={{ color: "#475569", fontSize: "0.88rem" }}>Drop image here or <span style={{ color: "#10B981", fontWeight: 700 }}>browse</span></p>
+                  <p style={{ color: "#94A3B8", fontSize: "0.72rem", marginTop: "0.3rem" }}>PNG, JPG, WEBP supported</p>
                 </>
               )}
             </div>
@@ -148,11 +148,11 @@ export default function WasteClassification() {
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                 <div style={{ fontSize: "2.5rem" }}>{cfg.icon}</div>
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: "0.7rem", color: "#64748b", fontWeight: 600, letterSpacing: "0.08em" }}>CLASSIFICATION RESULT</p>
+                  <p style={{ fontSize: "0.7rem", color: "#64748B", fontWeight: 600, letterSpacing: "0.08em" }}>CLASSIFICATION RESULT</p>
                   <h2 style={{ fontSize: "1.8rem", fontWeight: 900, color: cfg.color, marginTop: "0.25rem" }}>
                     {cfg.label}
                   </h2>
-                  <p style={{ fontSize: "0.8rem", color: "#94a3b8", marginTop: "0.25rem" }}>{cfg.tip}</p>
+                  <p style={{ fontSize: "0.8rem", color: "#64748B", marginTop: "0.25rem" }}>{cfg.tip}</p>
                 </div>
               </div>
 
@@ -199,13 +199,13 @@ export default function WasteClassification() {
                   return (
                     <div key={i} style={{
                       display: "flex", alignItems: "center", gap: "0.75rem",
-                      background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+                      background: "#F8FAFC", border: "1px solid #E2E8F0",
                       borderRadius: "0.75rem", padding: "0.6rem 0.875rem"
                     }}>
                       <span>{hcfg.icon}</span>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: "0.8rem", fontWeight: 600, color: hcfg.color }}>{hcfg.label}</div>
-                        <div style={{ fontSize: "0.68rem", color: "#475569" }}>{h.time}</div>
+                        <div style={{ fontSize: "0.8rem", fontWeight: 700, color: hcfg.color }}>{hcfg.label}</div>
+                        <div style={{ fontSize: "0.68rem", color: "#64748B", fontWeight: 500 }}>{h.time}</div>
                       </div>
                       <span style={{ fontSize: "0.78rem", fontWeight: 700, color: hcfg.color }}>
                         {(h.confidence * 100).toFixed(1)}%
@@ -218,10 +218,10 @@ export default function WasteClassification() {
           )}
 
           {/* Impact card */}
-          <GlassCard style={{ padding: "1.25rem", background: "rgba(34,197,94,0.04)", border: "1px solid rgba(34,197,94,0.12)" }}>
+          <GlassCard style={{ padding: "1.25rem", background: "#F0FDF4", border: "1px solid #BBF7D0" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
-              <Leaf size={16} color="#22c55e" />
-              <h3 style={{ fontSize: "0.9rem", fontWeight: 700, color: "#22c55e" }}>Sustainability Impact</h3>
+              <Leaf size={16} color="#059669" />
+              <h3 style={{ fontSize: "0.9rem", fontWeight: 700, color: "#059669" }}>Sustainability Impact</h3>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
               {[
@@ -230,9 +230,9 @@ export default function WasteClassification() {
                 { label: "Waste Diverted",   value: "2.4T" },
                 { label: "CO₂ Saved",        value: "180 kg" },
               ].map(m => (
-                <div key={m.label} style={{ textAlign: "center", padding: "0.6rem", background: "rgba(34,197,94,0.05)", borderRadius: "0.625rem" }}>
-                  <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "#22c55e" }}>{m.value}</div>
-                  <div style={{ fontSize: "0.65rem", color: "#475569", marginTop: "2px" }}>{m.label}</div>
+                <div key={m.label} style={{ textAlign: "center", padding: "0.6rem", background: "#ECFDF5", borderRadius: "0.625rem", border: "1px solid #D1FAE5" }}>
+                  <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "#059669" }}>{m.value}</div>
+                  <div style={{ fontSize: "0.65rem", color: "#64748B", marginTop: "2px" }}>{m.label}</div>
                 </div>
               ))}
             </div>
