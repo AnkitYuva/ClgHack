@@ -1,6 +1,15 @@
-import { Bell, Wifi } from "lucide-react";
+import { Bell, Wifi, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar({ title = "Dashboard" }) {
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("ecosmart_user") || "{}");
+
+  const handleLogout = () => {
+    localStorage.removeItem("ecosmart_token");
+    localStorage.removeItem("ecosmart_user");
+    navigate("/login");
+  };
   return (
     <header style={{
       display: "flex",
@@ -51,12 +60,17 @@ export default function Navbar({ title = "Dashboard" }) {
         </button>
 
         {/* Avatar */}
-        <div style={{
-          width: 34, height: 34, borderRadius: "50%",
-          background: "linear-gradient(135deg, #16a34a, #06b6d4)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontWeight: 700, fontSize: "0.8rem", color: "#000", cursor: "pointer"
-        }}>A</div>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div style={{
+            width: 34, height: 34, borderRadius: "50%",
+            background: "linear-gradient(135deg, #16a34a, #06b6d4)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontWeight: 700, fontSize: "0.8rem", color: "#000"
+          }}>{user.email ? user.email.charAt(0).toUpperCase() : "A"}</div>
+          <button onClick={handleLogout} style={{ background: "transparent", border: "none", color: "#ef4444", cursor: "pointer", display: "flex", alignItems: "center", padding: "0.4rem" }} title="Log out">
+            <LogOut size={16} />
+          </button>
+        </div>
       </div>
     </header>
   );

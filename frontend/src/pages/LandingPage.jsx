@@ -48,11 +48,11 @@ export default function LandingPage() {
           <span style={{ fontWeight: 800, fontSize: "1.1rem" }}>EcoSmart Bin</span>
         </div>
         <div style={{ display: "flex", gap: "0.75rem" }}>
-          <Link to="/dashboard">
-            <button className="btn-ghost" style={{ fontSize: "0.85rem", padding: "0.5rem 1.25rem" }}>Dashboard</button>
+          <Link to="/login">
+            <button className="btn-ghost" style={{ fontSize: "0.85rem", padding: "0.5rem 1.25rem" }}>Log in</button>
           </Link>
-          <Link to="/classify">
-            <button className="btn-primary" style={{ fontSize: "0.85rem", padding: "0.5rem 1.25rem" }}>Try AI Classifier</button>
+          <Link to="/signup">
+            <button className="btn-primary" style={{ fontSize: "0.85rem", padding: "0.5rem 1.25rem" }}>Sign up</button>
           </Link>
         </div>
       </nav>
@@ -97,13 +97,13 @@ export default function LandingPage() {
           </p>
 
           <div style={{ display: "flex", gap: "0.875rem", marginBottom: "2.5rem" }}>
-            <Link to="/dashboard">
+            <Link to="/signup">
               <button className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                Open Dashboard <ArrowRight size={16} />
+                Get Started <ArrowRight size={16} />
               </button>
             </Link>
-            <Link to="/classify">
-              <button className="btn-ghost">Try AI Classifier</button>
+            <Link to="/login">
+              <button className="btn-ghost">Admin Login</button>
             </Link>
           </div>
 
@@ -186,9 +186,9 @@ export default function LandingPage() {
 
         {/* Bottom CTA */}
         <div style={{ textAlign: "center", marginTop: "3rem" }}>
-          <Link to="/dashboard">
+          <Link to="/signup">
             <button className="btn-primary" style={{ fontSize: "1rem", padding: "0.875rem 2.5rem" }}>
-              Launch Full Dashboard →
+              Join EcoSmart Bin →
             </button>
           </Link>
         </div>

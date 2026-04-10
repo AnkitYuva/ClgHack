@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Canvas, useFrame } from "@react-three/fiber";
+import api from "../../services/api";
 
 /* ════════════════════════════════════════════════════════════════
    MATH UTILITIES
@@ -230,14 +231,26 @@ export default function RealRouteMap({ onStatsChange }) {
         <div style="color:#475569;font-size:11px;margin-top:4px">Truck starts &amp; returns here</div>
       </div>`, { maxWidth: 220, className: "ecosmart-popup" });
 
-    map.on("click", ({ latlng: { lat, lng } }) => {
-      setStops(prev => [...prev, {
-        id: `S-${Date.now()}`,
-        lat, lng,
-        wasteType: "mixed",
-        fillLevel: Math.floor(Math.random() * 40) + 60,
-      }]);
-    });
+    const fetchRequests = async () => {
+      try {
+        const res = await api.get("/requests");
+        const newStops = res.data.map(r => ({
+          id: r.id,
+          user_email: r.user_email,
+          lat: r.lat,
+          lng: r.lng,
+          wasteType: r.waste_type,
+          fillLevel: r.fill_level || 100,
+          timestamp: r.timestamp
+        }));
+        setStops(newStops);
+      } catch (err) {
+        console.error("Failed to fetch requests", err);
+      }
+    };
+
+    fetchRequests();
+    const interval = setInterval(fetchRequests, 5000); // Poll every 5s
 
     const style = document.createElement("style");
     style.textContent = `
@@ -252,7 +265,12 @@ export default function RealRouteMap({ onStatsChange }) {
     `;
     document.head.appendChild(style);
 
-    return () => { cancelAnimationFrame(animRef.current); map.remove(); leafletMap.current = null; };
+    return () => { 
+      clearInterval(interval);
+      cancelAnimationFrame(animRef.current); 
+      map.remove(); 
+      leafletMap.current = null; 
+    };
   }, []);
 
   /* ── Core routing logic ───────────────────────────────────────── */
@@ -337,7 +355,7 @@ export default function RealRouteMap({ onStatsChange }) {
         const color = WASTE_COLORS[stop.wasteType] || "#f97316";
         const m = L.marker([stop.lat, stop.lng], { icon: makePinIcon(color, idx + 1), zIndexOffset: 500 }).addTo(map);
         m.bindPopup(`
-          <div style="font-family:Inter,sans-serif;background:#0f172a;border-radius:12px;overflow:hidden;min-width:195px">
+          <div style="font-family:Inter,sans-serif;background:#0f172a;border-radius:12px;overflow:hidden;min-width:210px">
             <div style="background:${color}18;border-bottom:1px solid ${color}30;padding:10px 14px">
               <div style="display:flex;align-items:center;justify-content:space-between">
                 <span style="color:#f1f5f9;font-weight:700;font-size:13px">Stop #${idx + 1}</span>
@@ -345,7 +363,8 @@ export default function RealRouteMap({ onStatsChange }) {
               </div>
             </div>
             <div style="padding:10px 14px">
-              <div style="font-size:11px;color:#64748b;margin-bottom:6px">${stop.lat.toFixed(5)}, ${stop.lng.toFixed(5)}</div>
+              <div style="font-size:11px;color:#cbd5e1;margin-bottom:2px">Requested by: <b style="color:#f1f5f9">${stop.user_email}</b></div>
+              <div style="font-size:10px;color:#64748b;margin-bottom:6px">${new Date(stop.timestamp).toLocaleTimeString()}</div>
               <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:4px">
                 <span>Fill Level</span><span style="color:${color};font-weight:700">${stop.fillLevel}%</span>
               </div>
@@ -416,9 +435,14 @@ export default function RealRouteMap({ onStatsChange }) {
   }, [roadPath]);
 
   /* ── Stop controls ────────────────────────────────────────────── */
-  const removeStop  = useCallback((id) => setStops(p => p.filter(s => s.id !== id)), []);
-  const changeWaste = useCallback((id, t) => setStops(p => p.map(s => s.id === id ? { ...s, wasteType: t } : s)), []);
-  const clearAll    = useCallback(() => setStops([]), []);
+  const markCollected = useCallback(async (id) => {
+    try {
+      await api.put(`/requests/${id}/collect`);
+      setStops(p => p.filter(s => s.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
 
   /* ── Render ───────────────────────────────────────────────────── */
   return (
@@ -439,9 +463,9 @@ export default function RealRouteMap({ onStatsChange }) {
           }}>
             <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>📍</div>
             <div style={{ fontSize: "1.05rem", fontWeight: 800, color: "#f1f5f9", marginBottom: "0.35rem" }}>
-              Click anywhere on the map
+              No Pending Requests
             </div>
-            <div style={{ fontSize: "0.78rem", color: "#64748b" }}>to add waste pickup locations</div>
+            <div style={{ fontSize: "0.78rem", color: "#64748b" }}>Waiting for citizens to request pickup</div>
             <div style={{ fontSize: "0.72rem", color: "#06b6d4", marginTop: "0.5rem" }}>
               ✦ TSP-optimized · Real roads · Powered by OSRM
             </div>
@@ -526,15 +550,10 @@ export default function RealRouteMap({ onStatsChange }) {
                 border: "1px solid rgba(34,197,94,0.2)", borderRadius: "5px", padding: "2px 6px", fontWeight: 600 }}>
                 TSP ✓
               </span>
-              <button onClick={clearAll} style={{
-                background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.25)",
-                color: "#ef4444", borderRadius: "5px", fontSize: "0.65rem",
-                padding: "2px 7px", cursor: "pointer", fontWeight: 600,
-              }}>Clear</button>
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", maxHeight: 200, overflowY: "auto" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", maxHeight: 250, overflowY: "auto" }}>
             {(orderedStops.length > 0 ? orderedStops : stops).map((stop, idx) => {
               const color = WASTE_COLORS[stop.wasteType] || "#f97316";
               return (
@@ -548,21 +567,18 @@ export default function RealRouteMap({ onStatsChange }) {
                     color: "white", fontSize: "0.6rem", fontWeight: 800,
                     display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                   }}>{idx + 1}</span>
-                  <select value={stop.wasteType} onChange={e => changeWaste(stop.id, e.target.value)}
-                    style={{ flex: 1, background: "transparent", border: "none", color, fontSize: "0.67rem", fontWeight: 600, cursor: "pointer", outline: "none" }}>
-                    <option value="mixed"         style={{ background: "#0f172a" }}>🔶 Mixed</option>
-                    <option value="biodegradable" style={{ background: "#0f172a" }}>🟢 Biodegradable</option>
-                    <option value="recyclable"    style={{ background: "#0f172a" }}>🔵 Recyclable</option>
-                    <option value="hazardous"     style={{ background: "#0f172a" }}>🔴 Hazardous</option>
-                  </select>
-                  <button onClick={() => removeStop(stop.id)}
-                    style={{ background: "none", border: "none", color: "#475569", cursor: "pointer", fontSize: "0.8rem", lineHeight: 1, flexShrink: 0 }}>✕</button>
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "2px" }}>
+                    <span style={{ color, fontSize: "0.7rem", fontWeight: 700, textTransform: "capitalize" }}>{stop.wasteType}</span>
+                    <span style={{ color: "#94a3b8", fontSize: "0.6rem" }}>{stop.user_email}</span>
+                  </div>
+                  <button onClick={() => markCollected(stop.id)}
+                    style={{ background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", color: "#22c55e", borderRadius: "4px", padding: "4px 8px", cursor: "pointer", fontSize: "0.65rem", fontWeight: 700 }}>Collect</button>
                 </div>
               );
             })}
           </div>
           <div style={{ marginTop: "0.5rem", fontSize: "0.63rem", color: "#334155", textAlign: "center" }}>
-            Click map to add · Route auto-optimizes in 0.5s
+            Auto-polling live requests...
           </div>
         </div>
       )}
