@@ -18,6 +18,7 @@ const monthlyData = [
 export default function Reports() {
   const [bins, setBins] = useState([]);
   const [classificationLogs, setClassificationLogs] = useState([]);
+  const [liveStats, setLiveStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,10 +26,12 @@ export default function Reports() {
     const fetchData = () => {
       Promise.all([
         api.get("/bins").catch(() => ({ data: [] })),
-        api.get("/waste-logs").catch(() => ({ data: [] }))
-      ]).then(([binsRes, logsRes]) => {
+        api.get("/waste-logs").catch(() => ({ data: [] })),
+        api.get("/stats").catch(() => ({ data: null }))
+      ]).then(([binsRes, logsRes, statsRes]) => {
         setBins(binsRes.data || []);
         setClassificationLogs(logsRes.data || []);
+        setLiveStats(statsRes.data || null);
         setLoading(false);
       });
     };
@@ -72,14 +75,18 @@ export default function Reports() {
     ];
   }
 
-  // Live dynamic impact metrics
+  // Live dynamic impact metrics from SQLite database
+  const collectedKg = liveStats?.collected_kg || 0;
+  const co2Saved = liveStats?.co2_saved_kg || 0;
+  const efficiency = liveStats?.efficiency || 0;
+
   const impactMetrics = [
     { label: "Total Monitored Bins", value: `${totalBins}`, color: "#06b6d4", unit: "live devices" },
     { label: "Critical Overflow",    value: `${overflowBins}`, color: "#ef4444", unit: "needs immediate pickup" },
     { label: "Full Capacity Bins",   value: `${fullBins}`, color: "#f97316", unit: "≥ 80% filled" },
-    { label: "Total Waste Collected",value: "12.4T",  color: "#22c55e", unit: "this month" },
-    { label: "CO₂ Equivalent Saved", value: "890 kg", color: "#a855f7", unit: "via route opt." },
-    { label: "Collection Efficiency",value: "91%",    color: "#f59e0b", unit: "best ever" },
+    { label: "Total Waste Collected",value: `${collectedKg} kg`, color: "#22c55e", unit: "historical total" },
+    { label: "CO₂ Equivalent Saved", value: `${co2Saved} kg`, color: "#a855f7", unit: "via route optimization" },
+    { label: "Collection Efficiency",value: `${efficiency}%`, color: "#f59e0b", unit: "successful pickups" },
   ];
 
   return (

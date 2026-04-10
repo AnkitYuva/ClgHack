@@ -32,11 +32,27 @@ def get_stats():
     total = conn.execute("SELECT COUNT(*) FROM pickup_requests WHERE status = 'Pending'").fetchone()[0]
     full = conn.execute("SELECT COUNT(*) FROM pickup_requests WHERE status = 'Pending' AND fill_level >= 80").fetchone()[0]
     overflow = conn.execute("SELECT COUNT(*) FROM pickup_requests WHERE status = 'Pending' AND fill_level >= 95").fetchone()[0]
+    
+    # Real KPIs based on the history of collected vs pending requests
+    total_collected = conn.execute("SELECT COUNT(*) FROM pickup_requests WHERE status = 'Collected'").fetchone()[0]
+    total_requests = conn.execute("SELECT COUNT(*) FROM pickup_requests").fetchone()[0]
+    
     conn.close()
+    
+    # Assuming each collected pin represents ~4.2kg of waste and saves 1.5kg of CO2 routing emissions vs traditional fixed schedules
+    collected_kg = total_collected * 4.2
+    co2_saved_kg = total_collected * 1.5
+    
+    efficiency = 0
+    if total_requests > 0:
+        efficiency = int((total_collected / total_requests) * 100)
     
     return jsonify({
         "total_bins": total,
         "full_bins": full,
         "overflow_bins": overflow,
         "active_alerts": full + overflow,
+        "collected_kg": round(collected_kg, 1),
+        "co2_saved_kg": round(co2_saved_kg, 1),
+        "efficiency": efficiency
     })
