@@ -46,5 +46,11 @@ def init_db():
         c.execute("INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)",
                   ("admin@gmail.com", hashed_pw, "admin"))
 
+    # Try to add image_path column for garbage reporting feature
+    try:
+        c.execute("ALTER TABLE pickup_requests ADD COLUMN image_path TEXT")
+    except sqlite3.OperationalError:
+        pass # Column already exists
+
     conn.commit()
     conn.close()

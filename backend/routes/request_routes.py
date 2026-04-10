@@ -29,8 +29,17 @@ def get_requests():
     conn.close()
 
     requests = []
+    has_image_col = False
+    try:
+        conn = get_db()
+        conn.execute("SELECT image_path FROM pickup_requests LIMIT 1")
+        has_image_col = True
+        conn.close()
+    except:
+        pass
+
     for r in rows:
-        requests.append({
+        req_dict = {
             "id": r["id"],
             "user_id": r["user_id"],
             "user_email": r["user_email"],
@@ -40,26 +49,77 @@ def get_requests():
             "waste_type": r["waste_type"],
             "fill_level": r["fill_level"],
             "timestamp": r["timestamp"]
-        })
+        }
+        if has_image_col:
+            req_dict["image_path"] = r["image_path"]
+        requests.append(req_dict)
     return jsonify(requests)
 
 @request_bp.route("/requests", methods=["POST"])
 def create_request():
-    """User endpoint to request a pickup at their location"""
-    data = request.get_json()
-    user_id = data.get("user_id")
-    lat = data.get("lat")
-    lng = data.get("lng")
-    waste_type = data.get("waste_type", "mixed")
+    """User endpoint to request a pickup at their location, with optional image upload"""
+    import os
+    from werkzeug.utils import secure_filename
+    
+    # Try to get data from form-data (if image upload), else fallback to json
+    image_path = None
+    waste_type = "mixed"
+    
+    if request.content_type and "multipart/form-data" in request.content_type:
+        user_id = request.form.get("user_id")
+        lat = request.form.get("lat")
+        lng = request.form.get("lng")
+        waste_type = request.form.get("waste_type", "mixed")
+        
+        # Handle image
+        if "image" in request.files:
+            file = request.files["image"]
+            if file and file.filename != "":
+                filename = secure_filename(file.filename)
+                os.makedirs("uploads", exist_ok=True)
+                filepath = os.path.join("uploads", filename)
+                file.save(filepath)
+                image_path = f"uploads/{filename}"
+                
+                # If waste_type is auto/mixed, we can try to use AI classifier!
+                try:
+                    from ml.predict import predict_waste
+                    predicted_class, _ = predict_waste(filepath)
+                    waste_type = predicted_class
+                except Exception as e:
+                    print(f"Auto-classify failed: {e}")
+                    
+    else:
+        data = request.get_json() or {}
+        user_id = data.get("user_id")
+        lat = data.get("lat")
+        lng = data.get("lng")
+        waste_type = data.get("waste_type", "mixed")
 
     if not user_id or not lat or not lng:
         return jsonify({"error": "user_id, lat, and lng are required"}), 400
 
     conn = get_db()
-    conn.execute('''
-        INSERT INTO pickup_requests (user_id, lat, lng, waste_type)
-        VALUES (?, ?, ?, ?)
-    ''', (user_id, lat, lng, waste_type))
+    
+    # Check if image_path column exists first to build query correctly
+    has_image_col = False
+    try:
+        conn.execute("SELECT image_path FROM pickup_requests LIMIT 1")
+        has_image_col = True
+    except:
+        pass
+
+    if has_image_col and image_path:
+        conn.execute('''
+            INSERT INTO pickup_requests (user_id, lat, lng, waste_type, image_path)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (user_id, lat, lng, waste_type, image_path))
+    else:
+        conn.execute('''
+            INSERT INTO pickup_requests (user_id, lat, lng, waste_type)
+            VALUES (?, ?, ?, ?)
+        ''', (user_id, lat, lng, waste_type))
+        
     conn.commit()
     conn.close()
 

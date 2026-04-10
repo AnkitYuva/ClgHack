@@ -236,7 +236,8 @@ export default function RealRouteMap({ onStatsChange }) {
           lng: r.lng,
           wasteType: r.waste_type,
           fillLevel: r.fill_level || 100,
-          timestamp: r.timestamp
+          timestamp: r.timestamp,
+          image_path: r.image_path
         }));
         setStops(prev => {
           if (JSON.stringify(prev) === JSON.stringify(newStops)) {
@@ -353,6 +354,10 @@ export default function RealRouteMap({ onStatsChange }) {
       // === Step 4: Draw ordered pin markers ===
       ordered.forEach((stop, idx) => {
         const color = WASTE_COLORS[stop.wasteType] || "#f97316";
+        const imageHtml = stop.image_path 
+          ? `<div style="padding:10px 14px 0"><img src="http://127.0.0.1:5000/${stop.image_path}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;border:1px solid #E2E8F0;box-shadow:0 2px 8px rgba(0,0,0,0.05)" alt="Garbage Photo"/></div>` 
+          : '';
+          
         const m = L.marker([stop.lat, stop.lng], { icon: makePinIcon(color, idx + 1), zIndexOffset: 500 }).addTo(map);
         m.bindPopup(`
           <div style="font-family:Inter,sans-serif;background:#FFFFFF;border-radius:12px;overflow:hidden;min-width:210px">
@@ -362,6 +367,7 @@ export default function RealRouteMap({ onStatsChange }) {
                 <span style="color:${color};background:${color}15;border:1px solid ${color}30;border-radius:9999px;font-size:10px;font-weight:700;padding:2px 8px">${stop.wasteType.toUpperCase()}</span>
               </div>
             </div>
+            ${imageHtml}
             <div style="padding:10px 14px">
               <div style="font-size:11px;color:#475569;margin-bottom:2px">Requested by: <b style="color:#0F172A">${stop.user_email}</b></div>
               <div style="font-size:10px;color:#94A3B8;margin-bottom:6px">${new Date(stop.timestamp).toLocaleTimeString()}</div>

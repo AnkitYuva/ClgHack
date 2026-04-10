@@ -11,6 +11,7 @@ export default function UserDashboard() {
   const [requests, setRequests] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [wasteType, setWasteType] = useState("mixed");
+  const [imageFile, setImageFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -104,13 +105,32 @@ export default function UserDashboard() {
     if (!selectedLocation) return;
     setSubmitting(true);
     try {
-      await api.post("/requests", {
-        user_id: user.id,
-        lat: selectedLocation.lat,
-        lng: selectedLocation.lng,
-        waste_type: wasteType
-      });
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("user_id", user.id);
+        formData.append("lat", selectedLocation.lat);
+        formData.append("lng", selectedLocation.lng);
+        formData.append("waste_type", wasteType);
+        formData.append("image", imageFile);
+        
+        await api.post("/requests", formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+      } else {
+        await api.post("/requests", {
+          user_id: user.id,
+          lat: selectedLocation.lat,
+          lng: selectedLocation.lng,
+          waste_type: wasteType
+        });
+      }
+      
       setSelectedLocation(null);
+      setImageFile(null);
+      // reset file input visually if needed
+      const fileInput = document.querySelector('input[type="file"]');
+      if (fileInput) fileInput.value = '';
+
       if (markerRef.current && leafletMap.current) {
         leafletMap.current.removeLayer(markerRef.current);
         markerRef.current = null;
@@ -157,11 +177,23 @@ export default function UserDashboard() {
               onChange={e => setWasteType(e.target.value)}
               style={{ width: "100%", padding: "0.8rem", background: "#FFFFFF", border: "1px solid #CBD5E1", color: "#0F172A", borderRadius: "8px", marginBottom: "1rem", outline: "none", fontWeight: 500 }}
             >
-              <option value="mixed">Mixed Waste</option>
+              <option value="mixed">Auto/Mixed (AI Analyzes Photo)</option>
               <option value="biodegradable">Biodegradable</option>
               <option value="recyclable">Recyclable</option>
               <option value="hazardous">Hazardous</option>
             </select>
+
+            <label style={{ display: "block", marginBottom: "1rem" }}>
+              <span style={{ fontSize: "0.85rem", fontWeight: 600, display: "block", marginBottom: "0.4rem", color: "#475569" }}>
+                📸 Upload Garbage Photo (Optional)
+              </span>
+              <input 
+                type="file" 
+                accept="image/*"
+                onChange={e => e.target.files[0] && setImageFile(e.target.files[0])}
+                style={{ fontSize: "0.8rem", width: "100%", padding: "0.5rem", background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: "8px", cursor: "pointer" }}
+              />
+            </label>
 
             <button 
               onClick={handleRequestPickup}

@@ -8,8 +8,17 @@ from routes.auth_routes import auth_bp
 from routes.request_routes import request_bp
 from db import init_db
 
+from flask import Flask, send_from_directory
+import os
+
 app = Flask(__name__)
 CORS(app)
+
+# Serve uploaded garbage images
+os.makedirs("uploads", exist_ok=True)
+@app.route('/uploads/<path:filename>')
+def serve_uploads(filename):
+    return send_from_directory('uploads', filename)
 
 app.register_blueprint(bin_bp,   url_prefix="/api")
 app.register_blueprint(waste_bp, url_prefix="/api")
