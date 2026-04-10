@@ -1,0 +1,7 @@
+*.tar.gz
+__pycache__/
+*.pyc
+node_modules/
+dist/
+build/
+.env
