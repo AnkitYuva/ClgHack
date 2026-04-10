@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, Suspense } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -175,19 +175,16 @@ function lerpLatLng(a, b, t) {
 function Truck3D({ angleRef }) {
   const ref = useRef();
   const { scene } = useGLTF("/garbage_truck.glb");
-  
+
   useFrame((state) => {
     if (!ref.current) return;
-    // Apply path direction
     ref.current.rotation.y = -(angleRef.current ?? 0);
-    // Add subtle bounce effect while driving
-    ref.current.position.y = Math.sin(state.clock.elapsedTime * 15) * 0.03;
+    ref.current.position.y = Math.sin(state.clock.elapsedTime * 15) * 0.025;
   });
-  
+
   return (
-    <group ref={ref} scale={0.4}>
+    <group ref={ref} scale={0.55} position={[0, -0.5, 0]}>
       <primitive object={scene} />
-      <pointLight color="#22c55e" intensity={4} distance={3} position={[0, 0.5, 1]} />
     </group>
   );
 }
@@ -524,13 +521,20 @@ export default function RealRouteMap({ onStatsChange }) {
       {/* 3D Truck overlay */}
       <div ref={overlayRef} style={{
         position: "absolute", top: 0, left: 0,
-        width: 80, height: 80, zIndex: 2000, pointerEvents: "none",
+        width: 120, height: 120, zIndex: 2000, pointerEvents: "none",
         display: roadPath.length < 2 ? "none" : "block",
       }}>
-        <Canvas camera={{ position: [0, 4, 3], fov: 40 }} gl={{ alpha: true }}>
-          <ambientLight intensity={1.5} />
-          <directionalLight position={[2, 5, 2]} intensity={2.5} castShadow />
-          <Truck3D angleRef={truckAngle} />
+        <Canvas
+          camera={{ position: [0, 3.5, 4], fov: 45 }}
+          gl={{ alpha: true, antialias: true }}
+          style={{ background: "transparent" }}
+        >
+          <ambientLight intensity={2.5} />
+          <directionalLight position={[5, 10, 5]} intensity={3} />
+          <directionalLight position={[-5, 5, -5]} intensity={1.5} />
+          <Suspense fallback={null}>
+            <Truck3D angleRef={truckAngle} />
+          </Suspense>
         </Canvas>
       </div>
 
