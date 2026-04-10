@@ -74,7 +74,7 @@ export default function BinMonitoring() {
                   { label: "Last Update", value: new Date(selected.last_updated).toLocaleTimeString(), color: "#06b6d4" },
                 ].map(item => (
                   <div key={item.label} style={{
-                    background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+                    background: "#F8FAFC", border: "1px solid #E2E8F0",
                     borderRadius: "0.75rem", padding: "0.75rem", textAlign: "center"
                   }}>
                     <div style={{ fontSize: "0.62rem", color: "#64748b", fontWeight: 600, letterSpacing: "0.08em", marginBottom: "0.25rem" }}>{item.label}</div>
@@ -104,15 +104,15 @@ export default function BinMonitoring() {
                   key={bin.id}
                   onClick={() => setSelected(bin)}
                   style={{
-                    background: isSelected ? "rgba(34,197,94,0.06)" : "rgba(255,255,255,0.03)",
-                    border: isSelected ? "1px solid rgba(34,197,94,0.25)" : "1px solid rgba(255,255,255,0.06)",
+                    background: isSelected ? "rgba(16,185,129,0.05)" : "#FFFFFF",
+                    border: isSelected ? "1px solid rgba(16,185,129,0.4)" : "1px solid #E2E8F0",
                     borderRadius: "0.875rem", padding: "0.875rem 1rem",
                     cursor: "pointer", transition: "all 0.2s",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
                     <div>
-                      <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#e2e8f0" }}>{bin.name}</div>
+                      <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#1E293B" }}>{bin.name}</div>
                       <div style={{ fontSize: "0.68rem", color: "#475569", marginTop: "2px" }}>{bin.id} · {new Date(bin.last_updated).toLocaleTimeString()}</div>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>

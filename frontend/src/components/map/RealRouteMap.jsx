@@ -218,15 +218,15 @@ export default function RealRouteMap({ onStatsChange }) {
     const map = L.map(mapRef.current, { center: [13.0712, 77.5993], zoom: 16 });
     leafletMap.current = map;
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       attribution: "© OSM © CARTO", subdomains: "abcd", maxZoom: 20,
     }).addTo(map);
 
     L.marker([DEPOT.lat, DEPOT.lng], { icon: makeDepotIcon(), zIndexOffset: 9999 })
       .addTo(map)
-      .bindPopup(`<div style="font-family:Inter,sans-serif;background:#0f172a;padding:12px 16px;border-radius:12px;min-width:170px">
-        <div style="color:#06b6d4;font-weight:700;font-size:13px">🏭 Collection Depot</div>
-        <div style="color:#475569;font-size:11px;margin-top:4px">Truck starts &amp; returns here</div>
+      .bindPopup(`<div style="font-family:Inter,sans-serif;background:#FFFFFF;padding:12px 16px;border-radius:12px;min-width:170px;box-shadow:0 8px 24px rgba(0,0,0,0.1)">
+        <div style="color:#0284C7;font-weight:700;font-size:13px">🏭 Collection Depot</div>
+        <div style="color:#64748B;font-size:11px;margin-top:4px">Truck starts &amp; returns here</div>
       </div>`, { maxWidth: 220, className: "ecosmart-popup" });
 
     const fetchRequests = async () => {
@@ -257,13 +257,13 @@ export default function RealRouteMap({ onStatsChange }) {
 
     const style = document.createElement("style");
     style.textContent = `
-      .ecosmart-popup .leaflet-popup-content-wrapper{background:#0f172a;border:1px solid rgba(34,197,94,0.2);border-radius:14px;box-shadow:0 20px 40px rgba(0,0,0,0.6);padding:0;}
+      .ecosmart-popup .leaflet-popup-content-wrapper{background:#FFFFFF;border:1px solid #E2E8F0;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,0.1);padding:0;}
       .ecosmart-popup .leaflet-popup-content{margin:0;}
-      .ecosmart-popup .leaflet-popup-tip{background:#0f172a;}
-      .leaflet-control-zoom a{background:#0f172a!important;color:#22c55e!important;border-color:rgba(34,197,94,0.2)!important;}
-      .leaflet-control-zoom a:hover{background:#1e293b!important;}
-      .leaflet-control-attribution{background:rgba(2,6,23,0.7)!important;color:#475569!important;font-size:9px;}
-      .leaflet-control-attribution a{color:#22c55e!important;}
+      .ecosmart-popup .leaflet-popup-tip{background:#FFFFFF;}
+      .leaflet-control-zoom a{background:#FFFFFF!important;color:#10B981!important;border-color:#E2E8F0!important;}
+      .leaflet-control-zoom a:hover{background:#F1F5F9!important;}
+      .leaflet-control-attribution{background:rgba(255,255,255,0.85)!important;color:#94A3B8!important;font-size:9px;}
+      .leaflet-control-attribution a{color:#10B981!important;}
       @keyframes spin{to{transform:rotate(360deg)}}
     `;
     document.head.appendChild(style);
@@ -358,24 +358,24 @@ export default function RealRouteMap({ onStatsChange }) {
         const color = WASTE_COLORS[stop.wasteType] || "#f97316";
         const m = L.marker([stop.lat, stop.lng], { icon: makePinIcon(color, idx + 1), zIndexOffset: 500 }).addTo(map);
         m.bindPopup(`
-          <div style="font-family:Inter,sans-serif;background:#0f172a;border-radius:12px;overflow:hidden;min-width:210px">
-            <div style="background:${color}18;border-bottom:1px solid ${color}30;padding:10px 14px">
+          <div style="font-family:Inter,sans-serif;background:#FFFFFF;border-radius:12px;overflow:hidden;min-width:210px">
+            <div style="background:${color}15;border-bottom:1px solid ${color}25;padding:10px 14px">
               <div style="display:flex;align-items:center;justify-content:space-between">
-                <span style="color:#f1f5f9;font-weight:700;font-size:13px">Stop #${idx + 1}</span>
-                <span style="color:${color};background:${color}20;border:1px solid ${color}40;border-radius:9999px;font-size:10px;font-weight:700;padding:2px 8px">${stop.wasteType.toUpperCase()}</span>
+                <span style="color:#1E293B;font-weight:700;font-size:13px">Stop #${idx + 1}</span>
+                <span style="color:${color};background:${color}15;border:1px solid ${color}30;border-radius:9999px;font-size:10px;font-weight:700;padding:2px 8px">${stop.wasteType.toUpperCase()}</span>
               </div>
             </div>
             <div style="padding:10px 14px">
-              <div style="font-size:11px;color:#cbd5e1;margin-bottom:2px">Requested by: <b style="color:#f1f5f9">${stop.user_email}</b></div>
-              <div style="font-size:10px;color:#64748b;margin-bottom:6px">${new Date(stop.timestamp).toLocaleTimeString()}</div>
-              <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:4px">
+              <div style="font-size:11px;color:#475569;margin-bottom:2px">Requested by: <b style="color:#0F172A">${stop.user_email}</b></div>
+              <div style="font-size:10px;color:#94A3B8;margin-bottom:6px">${new Date(stop.timestamp).toLocaleTimeString()}</div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#64748B;margin-bottom:4px">
                 <span>Fill Level</span><span style="color:${color};font-weight:700">${stop.fillLevel}%</span>
               </div>
-              <div style="height:5px;background:#1e293b;border-radius:9999px;overflow:hidden">
+              <div style="height:5px;background:#E2E8F0;border-radius:9999px;overflow:hidden">
                 <div style="height:100%;width:${stop.fillLevel}%;background:${color};border-radius:9999px"></div>
               </div>
             </div>
-          </div>`, { maxWidth: 240, className: "ecosmart-popup" });
+          </div>`,   { maxWidth: 240, className: "ecosmart-popup" });
         pinMarkers.current.push(m);
       });
 
@@ -457,19 +457,19 @@ export default function RealRouteMap({ onStatsChange }) {
         <div style={{
           position: "absolute", inset: 0, display: "flex", alignItems: "center",
           justifyContent: "center", zIndex: 1000,
-          background: "rgba(2,6,23,0.55)", backdropFilter: "blur(3px)", pointerEvents: "none",
+          background: "rgba(248,250,252,0.7)", backdropFilter: "blur(3px)", pointerEvents: "none",
         }}>
           <div style={{
-            background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.3)",
+            background: "#FFFFFF", border: "1px solid #E2E8F0",
             borderRadius: "1.25rem", padding: "1.5rem 2.5rem", textAlign: "center",
-            boxShadow: "0 0 40px rgba(6,182,212,0.12)",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
           }}>
             <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>📍</div>
-            <div style={{ fontSize: "1.05rem", fontWeight: 800, color: "#f1f5f9", marginBottom: "0.35rem" }}>
+            <div style={{ fontSize: "1.05rem", fontWeight: 800, color: "#0F172A", marginBottom: "0.35rem" }}>
               No Pending Requests
             </div>
-            <div style={{ fontSize: "0.78rem", color: "#64748b" }}>Waiting for citizens to request pickup</div>
-            <div style={{ fontSize: "0.72rem", color: "#06b6d4", marginTop: "0.5rem" }}>
+            <div style={{ fontSize: "0.78rem", color: "#64748B" }}>Waiting for citizens to request pickup</div>
+            <div style={{ fontSize: "0.72rem", color: "#10B981", marginTop: "0.5rem", fontWeight: 600 }}>
               ✦ TSP-optimized · Real roads · Powered by OSRM
             </div>
           </div>
@@ -480,25 +480,25 @@ export default function RealRouteMap({ onStatsChange }) {
       {loading && (
         <div style={{
           position: "absolute", top: 12, right: 12, zIndex: 3000,
-          background: "rgba(2,6,23,0.9)", backdropFilter: "blur(10px)",
-          border: "1px solid rgba(6,182,212,0.3)", borderRadius: "10px",
+          background: "#FFFFFF", border: "1px solid #E2E8F0",
+          borderRadius: "10px", boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
           padding: "0.5rem 0.875rem", display: "flex", alignItems: "center", gap: "0.5rem",
         }}>
           <div style={{
-            width: 13, height: 13, border: "2px solid #06b6d4",
+            width: 13, height: 13, border: "2px solid #10B981",
             borderTopColor: "transparent", borderRadius: "50%",
             animation: "spin 0.8s linear infinite",
           }} />
-          <span style={{ fontSize: "0.72rem", color: "#06b6d4", fontWeight: 600 }}>Optimizing route…</span>
+          <span style={{ fontSize: "0.72rem", color: "#10B981", fontWeight: 600 }}>Optimizing route…</span>
         </div>
       )}
       {routeErr && !loading && (
         <div style={{
           position: "absolute", top: 12, right: 12, zIndex: 3000,
-          background: "rgba(2,6,23,0.88)", border: "1px solid rgba(249,115,22,0.3)",
+          background: "#FFF7ED", border: "1px solid #FED7AA",
           borderRadius: "10px", padding: "0.45rem 0.75rem",
         }}>
-          <span style={{ fontSize: "0.68rem", color: "#f97316" }}>⚠ {routeErr}</span>
+          <span style={{ fontSize: "0.68rem", color: "#F97316" }}>⚠ {routeErr}</span>
         </div>
       )}
 
@@ -506,17 +506,16 @@ export default function RealRouteMap({ onStatsChange }) {
       {savings && savings.pct > 0 && !loading && (
         <div style={{
           position: "absolute", top: 12, left: 12, zIndex: 3000,
-          background: "rgba(2,6,23,0.92)", backdropFilter: "blur(12px)",
-          border: "1px solid rgba(34,197,94,0.3)", borderRadius: "12px",
-          padding: "0.6rem 0.875rem",
-          boxShadow: "0 0 20px rgba(34,197,94,0.1)",
+          background: "#FFFFFF", border: "1px solid #D1FAE5",
+          borderRadius: "12px", padding: "0.6rem 0.875rem",
+          boxShadow: "0 4px 16px rgba(16,185,129,0.15)",
         }}>
-          <div style={{ fontSize: "0.65rem", color: "#64748b", marginBottom: "2px" }}>Route optimized</div>
+          <div style={{ fontSize: "0.65rem", color: "#64748B", marginBottom: "2px", fontWeight: 600 }}>Route optimized</div>
           <div style={{ display: "flex", alignItems: "baseline", gap: "4px" }}>
-            <span style={{ fontSize: "1.3rem", fontWeight: 900, color: "#22c55e" }}>{savings.pct}%</span>
-            <span style={{ fontSize: "0.7rem", color: "#22c55e", fontWeight: 600 }}>shorter</span>
+            <span style={{ fontSize: "1.3rem", fontWeight: 900, color: "#10B981" }}>{savings.pct}%</span>
+            <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: 600 }}>shorter</span>
           </div>
-          <div style={{ fontSize: "0.63rem", color: "#475569", marginTop: "2px" }}>
+          <div style={{ fontSize: "0.63rem", color: "#64748B", marginTop: "2px" }}>
             {savings.naiveKm} km → {savings.optimKm} km
           </div>
         </div>
@@ -539,21 +538,18 @@ export default function RealRouteMap({ onStatsChange }) {
       {stops.length > 0 && (
         <div style={{
           position: "absolute", bottom: 16, left: 16, zIndex: 3000,
-          background: "rgba(2,6,23,0.93)", backdropFilter: "blur(14px)",
-          border: "1px solid rgba(6,182,212,0.18)", borderRadius: "14px",
-          padding: "0.875rem", width: 248,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(6,182,212,0.06)",
+          background: "#FFFFFF", border: "1px solid #E2E8F0",
+          borderRadius: "16px", padding: "0.875rem", width: 256,
+          boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#f1f5f9" }}>
+            <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#0F172A" }}>
               📍 {stops.length} pickup{stops.length > 1 ? "s" : ""}
             </span>
-            <div style={{ display: "flex", gap: "0.4rem" }}>
-              <span style={{ fontSize: "0.63rem", color: "#22c55e", background: "rgba(34,197,94,0.1)",
-                border: "1px solid rgba(34,197,94,0.2)", borderRadius: "5px", padding: "2px 6px", fontWeight: 600 }}>
-                TSP ✓
-              </span>
-            </div>
+            <span style={{ fontSize: "0.63rem", color: "#10B981", background: "#D1FAE5",
+              border: "1px solid #A7F3D0", borderRadius: "5px", padding: "2px 7px", fontWeight: 700 }}>
+              TSP ✓
+            </span>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", maxHeight: 250, overflowY: "auto" }}>
@@ -562,25 +558,25 @@ export default function RealRouteMap({ onStatsChange }) {
               return (
                 <div key={stop.id} style={{
                   display: "flex", alignItems: "center", gap: "0.45rem",
-                  background: "rgba(255,255,255,0.04)", borderRadius: "8px",
-                  padding: "0.4rem 0.5rem", border: `1px solid ${color}20`,
+                  background: "#F8FAFC", borderRadius: "8px",
+                  padding: "0.4rem 0.5rem", border: `1px solid ${color}25`,
                 }}>
                   <span style={{
-                    width: 20, height: 20, borderRadius: "50%", background: color,
-                    color: "white", fontSize: "0.6rem", fontWeight: 800,
+                    width: 22, height: 22, borderRadius: "50%", background: color,
+                    color: "white", fontSize: "0.65rem", fontWeight: 800,
                     display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                   }}>{idx + 1}</span>
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "2px" }}>
-                    <span style={{ color, fontSize: "0.7rem", fontWeight: 700, textTransform: "capitalize" }}>{stop.wasteType}</span>
-                    <span style={{ color: "#94a3b8", fontSize: "0.6rem" }}>{stop.user_email}</span>
+                    <span style={{ color, fontSize: "0.72rem", fontWeight: 700, textTransform: "capitalize" }}>{stop.wasteType}</span>
+                    <span style={{ color: "#94A3B8", fontSize: "0.6rem" }}>{stop.user_email}</span>
                   </div>
                   <button onClick={() => markCollected(stop.id)}
-                    style={{ background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", color: "#22c55e", borderRadius: "4px", padding: "4px 8px", cursor: "pointer", fontSize: "0.65rem", fontWeight: 700 }}>Collect</button>
+                    style={{ background: "#D1FAE5", border: "1px solid #A7F3D0", color: "#059669", borderRadius: "6px", padding: "4px 8px", cursor: "pointer", fontSize: "0.65rem", fontWeight: 700 }}>Collect</button>
                 </div>
               );
             })}
           </div>
-          <div style={{ marginTop: "0.5rem", fontSize: "0.63rem", color: "#334155", textAlign: "center" }}>
+          <div style={{ marginTop: "0.5rem", fontSize: "0.63rem", color: "#94A3B8", textAlign: "center", fontWeight: 500 }}>
             Auto-polling live requests...
           </div>
         </div>

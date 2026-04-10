@@ -31,7 +31,7 @@ export default function UserDashboard() {
     });
     leafletMap.current = map;
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       attribution: "© OSM © CARTO",
     }).addTo(map);
 
@@ -132,30 +132,30 @@ export default function UserDashboard() {
   if (!user) return null;
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "#020617", color: "white" }}>
+    <div style={{ display: "flex", height: "100vh", background: "#F8FAFC", color: "#0F172A" }}>
       {/* Sidebar for requesting */}
-      <div style={{ width: 380, background: "#0f172a", borderRight: "1px solid rgba(255,255,255,0.1)", display: "flex", flexDirection: "column" }}>
+      <div style={{ width: 380, background: "#FFFFFF", borderRight: "1px solid #E2E8F0", display: "flex", flexDirection: "column", boxShadow: "4px 0 24px rgba(0,0,0,0.03)", zIndex: 10 }}>
         
-        <div style={{ padding: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
-          <h1 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#22c55e" }}>Citizen Portal</h1>
-          <p style={{ fontSize: "0.8rem", color: "#64748b", marginTop: "0.25rem" }}>Logged in as {user.email}</p>
+        <div style={{ padding: "1.5rem", borderBottom: "1px solid #E2E8F0" }}>
+          <h1 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#10B981" }}>Citizen Portal</h1>
+          <p style={{ fontSize: "0.8rem", color: "#64748B", marginTop: "0.25rem" }}>Logged in as {user.email}</p>
           <button onClick={logout} style={{ marginTop: "1rem", background: "rgba(239,68,68,0.1)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.3)", borderRadius: "6px", padding: "0.4rem 0.8rem", fontSize: "0.75rem", cursor: "pointer" }}>Log out</button>
         </div>
 
         <div style={{ padding: "1.5rem", flex: 1, overflowY: "auto" }}>
           <h2 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: "1rem" }}>Request Garbage Pickup</h2>
           
-          <div style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: "8px", padding: "1rem", marginBottom: "1.5rem" }}>
-            <p style={{ fontSize: "0.8rem", color: "#e2e8f0", marginBottom: "1rem" }}>
-              1. <b>Auto-Location:</b> We'll try to find you automatically.<br/><br/>
-              2. <b>Manual Override:</b> Alternatively, click anywhere on the map to pinpoint your garbage location.<br/><br/>
+          <div style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)", borderRadius: "12px", padding: "1.25rem", marginBottom: "1.5rem" }}>
+            <p style={{ fontSize: "0.8rem", color: "#334155", marginBottom: "1rem", lineHeight: "1.5" }}>
+              1. <b>Auto-Location:</b> We'll try to find you automatically.<br/>
+              2. <b>Manual Override:</b> Alternatively, click anywhere on the map to pinpoint your garbage location.<br/>
               3. Select waste type and submit your request directly to the routing system.
             </p>
 
             <select 
               value={wasteType} 
               onChange={e => setWasteType(e.target.value)}
-              style={{ width: "100%", padding: "0.6rem", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.2)", color: "white", borderRadius: "6px", marginBottom: "1rem", outline: "none" }}
+              style={{ width: "100%", padding: "0.8rem", background: "#FFFFFF", border: "1px solid #CBD5E1", color: "#0F172A", borderRadius: "8px", marginBottom: "1rem", outline: "none", fontWeight: 500 }}
             >
               <option value="mixed">Mixed Waste</option>
               <option value="biodegradable">Biodegradable</option>
@@ -166,7 +166,7 @@ export default function UserDashboard() {
             <button 
               onClick={handleRequestPickup}
               disabled={!selectedLocation || submitting}
-              style={{ width: "100%", padding: "0.75rem", background: selectedLocation ? "#22c55e" : "#475569", color: "#0f172a", border: "none", borderRadius: "6px", fontWeight: 700, cursor: selectedLocation ? "pointer" : "not-allowed" }}
+              style={{ width: "100%", padding: "0.85rem", background: selectedLocation ? "#10B981" : "#E2E8F0", color: selectedLocation ? "#FFFFFF" : "#94A3B8", border: "none", borderRadius: "9999px", fontWeight: 700, cursor: selectedLocation ? "pointer" : "not-allowed", transition: "all 0.2s" }}
             >
               {submitting ? "Sending..." : "Submit Pickup Request"}
             </button>
@@ -178,19 +178,19 @@ export default function UserDashboard() {
               <p style={{ fontSize: "0.8rem", color: "#64748b" }}>No requests found.</p>
             ) : (
               requests.map(req => (
-                <div key={req.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", padding: "0.75rem", borderRadius: "8px" }}>
+                <div key={req.id} style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", padding: "1rem", borderRadius: "12px", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.4rem" }}>
-                    <span style={{ fontSize: "0.8rem", fontWeight: 700, textTransform: "capitalize" }}>{req.waste_type}</span>
+                    <span style={{ fontSize: "0.85rem", fontWeight: 700, textTransform: "capitalize", color: "#1E293B" }}>{req.waste_type}</span>
                     <span style={{ 
-                      fontSize: "0.7rem", fontWeight: 700, padding: "2px 6px", borderRadius: "4px",
-                      background: req.status === "Pending" ? "rgba(249,115,22,0.1)" : "rgba(34,197,94,0.1)",
-                      color: req.status === "Pending" ? "#f97316" : "#22c55e",
-                      border: req.status === "Pending" ? "1px solid rgba(249,115,22,0.3)" : "1px solid rgba(34,197,94,0.3)"
+                      fontSize: "0.7rem", fontWeight: 700, padding: "2px 8px", borderRadius: "9999px",
+                      background: req.status === "Pending" ? "rgba(249,115,22,0.1)" : "rgba(16,185,129,0.1)",
+                      color: req.status === "Pending" ? "#F97316" : "#10B981",
+                      border: req.status === "Pending" ? "1px solid rgba(249,115,22,0.2)" : "1px solid rgba(16,185,129,0.2)"
                     }}>
                       {req.status}
                     </span>
                   </div>
-                  <div style={{ fontSize: "0.7rem", color: "#94a3b8" }}>{new Date(req.timestamp).toLocaleString()}</div>
+                  <div style={{ fontSize: "0.7rem", color: "#64748B", fontWeight: 500 }}>{new Date(req.timestamp).toLocaleString()}</div>
                 </div>
               ))
             )}
@@ -202,7 +202,7 @@ export default function UserDashboard() {
       <div style={{ flex: 1, position: "relative" }}>
         <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
         {!selectedLocation && (
-          <div style={{ position: "absolute", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 1000, background: "rgba(2,6,23,0.8)", border: "1px solid rgba(34,197,94,0.3)", color: "white", padding: "0.5rem 1rem", borderRadius: "9999px", fontSize: "0.8rem", fontWeight: 600, display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <div style={{ position: "absolute", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 1000, background: "#FFFFFF", border: "1px solid #E2E8F0", color: "#0F172A", padding: "0.75rem 1.25rem", borderRadius: "9999px", fontSize: "0.85rem", fontWeight: 600, display: "flex", gap: "0.5rem", alignItems: "center", boxShadow: "0 10px 25px rgba(0,0,0,0.08)" }}>
             <span style={{ animation: "spin 2s linear infinite", display: "inline-block" }}>⏳</span> Fetching GPS... or click map to manually plot
           </div>
         )}

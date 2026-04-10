@@ -145,10 +145,10 @@ export default function Reports() {
                 <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-            <XAxis dataKey="month" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
-            <Tooltip contentStyle={{ background: "#0f172a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0.75rem", color: "#e2e8f0", fontSize: "0.78rem" }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+            <XAxis dataKey="month" tick={{ fill: "#64748B", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: "#64748B", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: "0.75rem", color: "#0F172A", fontSize: "0.78rem", boxShadow: "0 10px 24px rgba(0,0,0,0.08)" }} />
             <Area type="monotone" dataKey="efficiency" stroke="#22c55e" fill="url(#effGrad)" strokeWidth={2} dot={{ fill: "#22c55e", r: 4 }} />
             <Area type="monotone" dataKey="overflow"   stroke="#ef4444" fill="url(#ovfGrad)" strokeWidth={2} dot={{ fill: "#ef4444", r: 4 }} />
           </AreaChart>
@@ -164,7 +164,7 @@ export default function Reports() {
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem" }}>
             <thead>
-              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+              <tr style={{ borderBottom: "1px solid #F1F5F9" }}>
                 {["Bin ID", "Location", "Fill Level", "Status", "Waste Type", "Last Sync"].map(h => (
                   <th key={h} style={{ padding: "0.625rem 0.875rem", textAlign: "left", color: "#64748b", fontWeight: 600, fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase" }}>{h}</th>
                 ))}

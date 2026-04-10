@@ -22,7 +22,7 @@ export default function AlertPanel({ alerts = [] }) {
           }}>
             <Icon size={18} color={cfg.color} style={{ flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <p style={{ fontSize: "0.82rem", color: "#e2e8f0", fontWeight: 500 }}>{alert.message}</p>
+              <p style={{ fontSize: "0.82rem", color: "#1E293B", fontWeight: 600 }}>{alert.message}</p>
               {alert.bin && (
                 <p style={{ fontSize: "0.7rem", color: "#64748b", marginTop: "2px" }}>{alert.bin}</p>
               )}

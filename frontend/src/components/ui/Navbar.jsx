@@ -22,16 +22,15 @@ export default function Navbar({ title = "Dashboard" }) {
       alignItems: "center",
       justifyContent: "space-between",
       padding: "1rem 1.5rem",
-      background: "rgba(2, 6, 23, 0.7)",
-      backdropFilter: "blur(20px)",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      background: "#FFFFFF",
+      borderBottom: "1px solid #E2E8F0",
       position: "sticky",
       top: 0,
       zIndex: 50,
     }}>
       <div>
-        <h1 style={{ fontSize: "1.2rem", fontWeight: 700, color: "#f1f5f9" }}>{title}</h1>
-        <p style={{ fontSize: "0.72rem", color: "#64748b", marginTop: "1px" }}>
+        <h1 style={{ fontSize: "1.2rem", fontWeight: 700, color: "#0F172A" }}>{title}</h1>
+        <p style={{ fontSize: "0.72rem", color: "#64748B", marginTop: "1px" }}>
           {new Date().toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
         </p>
       </div>
@@ -39,25 +38,25 @@ export default function Navbar({ title = "Dashboard" }) {
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
         {/* Live indicator */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.4rem",
-          background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)",
+          background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)",
           borderRadius: "9999px", padding: "0.3rem 0.75rem" }}>
-          <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#22c55e",
-            boxShadow: "0 0 8px #22c55e", animation: "pulse 2s infinite" }} />
-          <span style={{ fontSize: "0.7rem", color: "#22c55e", fontWeight: 600 }}>LIVE</span>
+          <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#10B981",
+            boxShadow: "0 0 8px #10B981", animation: "pulse 2s infinite" }} />
+          <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: 600 }}>LIVE</span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "0.35rem",
-          fontSize: "0.72rem", color: "#64748b" }}>
-          <Wifi size={13} color="#22c55e" /> Connected
+          fontSize: "0.72rem", color: "#64748B", fontWeight: 500 }}>
+          <Wifi size={13} color="#10B981" /> Connected
         </div>
 
         {/* Notification bell */}
         <button style={{
-          position: "relative", background: "rgba(255,255,255,0.05)",
-          border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0.75rem",
+          position: "relative", background: "#F8FAFC",
+          border: "1px solid #E2E8F0", borderRadius: "12px",
           padding: "0.5rem", cursor: "pointer", display: "flex", alignItems: "center"
         }}>
-          <Bell size={16} color="#94a3b8" />
+          <Bell size={18} color="#64748B" />
           <span style={{
             position: "absolute", top: 4, right: 4, width: 7, height: 7,
             borderRadius: "50%", background: "#ef4444",
@@ -68,10 +67,11 @@ export default function Navbar({ title = "Dashboard" }) {
         {/* Avatar */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <div style={{
-            width: 34, height: 34, borderRadius: "50%",
-            background: "linear-gradient(135deg, #16a34a, #06b6d4)",
+            width: 36, height: 36, borderRadius: "50%",
+            background: "linear-gradient(135deg, #10B981, #06B6D4)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontWeight: 700, fontSize: "0.8rem", color: "#000"
+            fontWeight: 700, fontSize: "0.85rem", color: "#FFFFFF",
+            boxShadow: "0 4px 10px rgba(16, 185, 129, 0.3)"
           }}>{user.email ? user.email.charAt(0).toUpperCase() : "A"}</div>
           <button onClick={handleLogout} style={{ background: "transparent", border: "none", color: "#ef4444", cursor: "pointer", display: "flex", alignItems: "center", padding: "0.4rem" }} title="Log out">
             <LogOut size={16} />
