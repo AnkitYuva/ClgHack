@@ -18,22 +18,22 @@ export default function RouteOptimization() {
       {/* Instruction banner */}
       <GlassCard style={{
         padding: "0.875rem 1.25rem", marginBottom: "1.25rem",
-        background: "rgba(6,182,212,0.05)", border: "1px solid rgba(6,182,212,0.18)",
+        background: "#EFF9F6", border: "1px solid #A7F3D0",
         display: "flex", alignItems: "center", gap: "0.875rem",
       }}>
         <div style={{
           width: 36, height: 36, borderRadius: "10px",
-          background: "rgba(6,182,212,0.12)", border: "1px solid rgba(6,182,212,0.25)",
+          background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)",
           display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
         }}>
-          <Info size={18} color="#06b6d4" />
+          <Info size={18} color="#10B981" />
         </div>
         <div>
-          <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#f1f5f9" }}>
+          <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#0F172A" }}>
             Plan your waste collection route
           </div>
-          <div style={{ fontSize: "0.73rem", color: "#64748b", marginTop: "2px" }}>
-            📍 Click anywhere on the map to drop a pickup location · The system automatically calculates the shortest route using nearest-neighbour optimization · Add as many stops as needed
+          <div style={{ fontSize: "0.73rem", color: "#64748B", marginTop: "2px" }}>
+            📍 Pickup requests from citizens appear automatically · The system calculates the shortest route using TSP optimization · Click Collect to mark stops as done
           </div>
         </div>
       </GlassCard>
@@ -70,16 +70,16 @@ export default function RouteOptimization() {
 
         <div style={{
           height: 500, borderRadius: "1rem", overflow: "hidden",
-          background: "#0f172a", border: "1px solid rgba(34,197,94,0.1)",
+          background: "#F1F5F9", border: "1px solid #E2E8F0",
         }}>
           <Suspense fallback={
             <div style={{
               display: "flex", flexDirection: "column", alignItems: "center",
-              justifyContent: "center", height: "100%", color: "#06b6d4",
+              justifyContent: "center", height: "100%", color: "#10B981",
               fontSize: "0.85rem", gap: "0.5rem",
             }}>
               <div style={{
-                width: 32, height: 32, border: "2px solid #06b6d4",
+                width: 32, height: 32, border: "2px solid #10B981",
                 borderTopColor: "transparent", borderRadius: "50%",
                 animation: "spin 1s linear infinite",
               }} />
@@ -129,8 +129,8 @@ export default function RouteOptimization() {
               <Icon size={20} color={color} />
             </div>
             <div style={{ fontSize: "1.35rem", fontWeight: 800, color, letterSpacing: "-0.5px" }}>{value}</div>
-            <div style={{ fontSize: "0.68rem", color: "#64748b", marginTop: "2px" }}>{label}</div>
-            <div style={{ fontSize: "0.62rem", color: "#334155", marginTop: "3px" }}>{sub}</div>
+            <div style={{ fontSize: "0.68rem", color: "#64748B", marginTop: "2px" }}>{label}</div>
+            <div style={{ fontSize: "0.62rem", color: "#94A3B8", marginTop: "3px" }}>{sub}</div>
           </GlassCard>
         ))}
       </div>
@@ -174,9 +174,9 @@ export default function RouteOptimization() {
 
             <div style={{
               marginTop: "0.75rem", padding: "0.75rem", borderRadius: "0.75rem",
-              background: "rgba(34,197,94,0.05)", border: "1px solid rgba(34,197,94,0.12)",
+              background: "#F0FDF4", border: "1px solid #BBF7D0",
             }}>
-              <div style={{ fontSize: "0.72rem", color: "#22c55e", fontWeight: 600, marginBottom: "4px" }}>
+              <div style={{ fontSize: "0.72rem", color: "#059669", fontWeight: 600, marginBottom: "4px" }}>
                 ✦ Nearest-Neighbour Algorithm
               </div>
               <div style={{ fontSize: "0.67rem", color: "#475569", lineHeight: 1.5 }}>
@@ -203,8 +203,8 @@ export default function RouteOptimization() {
               ].map(m => (
                 <div key={m.label} style={{
                   textAlign: "center", padding: "0.75rem",
-                  background: "rgba(255,255,255,0.03)", borderRadius: "0.75rem",
-                  border: `1px solid ${m.color}15`,
+                  background: "#F8FAFC", borderRadius: "0.75rem",
+                  border: `1px solid ${m.color}20`,
                 }}>
                   <div style={{ fontSize: "1.2rem", fontWeight: 800, color: m.color }}>{m.value}</div>
                   <div style={{ fontSize: "0.65rem", color: "#475569", marginTop: "3px" }}>{m.label}</div>
@@ -214,14 +214,14 @@ export default function RouteOptimization() {
 
             <div style={{
               marginTop: "1rem", padding: "0.75rem", borderRadius: "0.75rem",
-              background: "rgba(6,182,212,0.05)", border: "1px solid rgba(6,182,212,0.12)",
+              background: "#EFF9FB", border: "1px solid #BAE6FD",
             }}>
-              <div style={{ fontSize: "0.7rem", color: "#64748b", lineHeight: 1.6 }}>
-                <strong style={{ color: "#06b6d4" }}>How it works:</strong><br />
-                1. Click map → drop pickup pins<br />
-                2. Algorithm finds shortest path<br />
-                3. Truck animates the route live<br />
-                4. Adjust waste type per stop
+              <div style={{ fontSize: "0.7rem", color: "#475569", lineHeight: 1.6 }}>
+                <strong style={{ color: "#0284C7" }}>How it works:</strong><br />
+                1. Citizens submit pickup requests via their app<br />
+                2. Algorithm calculates the optimal TSP route<br />
+                3. Truck animates along the real road network<br />
+                4. Click Collect to mark pickups as done
               </div>
             </div>
           </GlassCard>
@@ -232,15 +232,15 @@ export default function RouteOptimization() {
       {!hasRoute && (
         <GlassCard style={{
           padding: "2.5rem", textAlign: "center",
-          background: "rgba(6,182,212,0.03)", border: "1px dashed rgba(6,182,212,0.2)",
+          background: "#EFF9F6", border: "1px dashed #A7F3D0",
         }}>
           <div style={{ fontSize: "3rem", marginBottom: "0.75rem" }}>🗺️</div>
-          <div style={{ fontSize: "1rem", fontWeight: 700, color: "#f1f5f9", marginBottom: "0.5rem" }}>
+          <div style={{ fontSize: "1rem", fontWeight: 700, color: "#0F172A", marginBottom: "0.5rem" }}>
             No route planned yet
           </div>
-          <div style={{ fontSize: "0.78rem", color: "#475569", maxWidth: 380, margin: "0 auto" }}>
-            Click on the map above to drop pickup locations. The system will instantly calculate
-            the most efficient collection route — just like a delivery app.
+          <div style={{ fontSize: "0.78rem", color: "#64748B", maxWidth: 380, margin: "0 auto" }}>
+            Wait for citizens to submit pickup requests. The system will instantly calculate
+            the most efficient collection route and animate the truck live.
           </div>
         </GlassCard>
       )}

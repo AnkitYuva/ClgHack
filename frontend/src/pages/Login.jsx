@@ -6,17 +6,17 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await api.post("/login", { email, password });
       if (res.data.success) {
         localStorage.setItem("ecosmart_token", res.data.token);
         localStorage.setItem("ecosmart_user", JSON.stringify(res.data.user));
-        
-        // Redirect based on role
         if (res.data.user.role === "admin") {
           navigate("/dashboard");
         } else {
@@ -25,40 +25,102 @@ export default function Login() {
       }
     } catch (err) {
       setError(err.response?.data?.error || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
+  const inputStyle = {
+    width: "100%", padding: "0.9rem 1rem",
+    background: "#F8FAFC", border: "1px solid #E2E8F0",
+    borderRadius: "12px", color: "#0F172A", outline: "none",
+    fontSize: "0.9rem", transition: "border-color 0.2s",
+    boxSizing: "border-box",
+  };
+
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#020617" }}>
-      <div style={{ width: 400, padding: "2rem", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "1rem", backdropFilter: "blur(10px)", textAlign: "center" }}>
-        <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#f1f5f9", marginBottom: "0.5rem" }}>Welcome Back</h2>
-        <p style={{ fontSize: "0.875rem", color: "#94a3b8", marginBottom: "2rem" }}>Log in to EcoSmart Bin tracking system</p>
-        
-        {error && <div style={{ color: "#ef4444", background: "rgba(239,68,68,0.1)", padding: "0.5rem", borderRadius: "0.5rem", marginBottom: "1rem", fontSize: "0.875rem" }}>{error}</div>}
-        
-        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <input 
-            type="email" 
-            placeholder="Email address" 
+    <div style={{
+      minHeight: "100vh", display: "flex", alignItems: "center",
+      justifyContent: "center", background: "#F4F7F6",
+      backgroundImage: "radial-gradient(circle at 30% 20%, rgba(16,185,129,0.08) 0%, transparent 60%), radial-gradient(circle at 70% 80%, rgba(6,182,212,0.06) 0%, transparent 60%)",
+    }}>
+      {/* Card */}
+      <div style={{
+        width: 420, background: "#FFFFFF",
+        border: "1px solid #E2E8F0", borderRadius: "24px",
+        boxShadow: "0 20px 60px rgba(15,23,42,0.08)", padding: "2.5rem",
+        textAlign: "center",
+      }}>
+        {/* Logo mark */}
+        <div style={{
+          width: 60, height: 60, borderRadius: "18px",
+          background: "linear-gradient(135deg, #10B981, #06B6D4)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          margin: "0 auto 1.25rem", boxShadow: "0 8px 20px rgba(16,185,129,0.3)",
+          fontSize: "1.6rem",
+        }}>🌿</div>
+
+        <h2 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#0F172A", marginBottom: "0.35rem" }}>
+          Welcome Back
+        </h2>
+        <p style={{ fontSize: "0.875rem", color: "#94A3B8", marginBottom: "2rem" }}>
+          Log in to EcoSmart Bin tracking system
+        </p>
+
+        {error && (
+          <div style={{
+            color: "#DC2626", background: "#FEF2F2",
+            border: "1px solid #FECACA", padding: "0.75rem 1rem",
+            borderRadius: "10px", marginBottom: "1.25rem",
+            fontSize: "0.85rem", textAlign: "left",
+          }}>⚠ {error}</div>
+        )}
+
+        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+          <input
+            type="email"
+            placeholder="Email address"
             value={email} onChange={e => setEmail(e.target.value)}
-            style={{ width: "100%", padding: "0.75rem", background: "rgba(0,0,0,0.2)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0.5rem", color: "#f1f5f9", outline: "none" }}
-            required 
+            style={inputStyle}
+            required
           />
-          <input 
-            type="password" 
-            placeholder="Password" 
+          <input
+            type="password"
+            placeholder="Password"
             value={password} onChange={e => setPassword(e.target.value)}
-            style={{ width: "100%", padding: "0.75rem", background: "rgba(0,0,0,0.2)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0.5rem", color: "#f1f5f9", outline: "none" }}
-            required 
+            style={inputStyle}
+            required
           />
-          <button type="submit" style={{ width: "100%", padding: "0.75rem", background: "#22c55e", color: "#0f172a", border: "none", borderRadius: "0.5rem", fontWeight: 700, cursor: "pointer", marginTop: "0.5rem" }}>
-            Sign In
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: "100%", padding: "0.9rem",
+              background: loading ? "#A7F3D0" : "#10B981",
+              color: "#FFFFFF", border: "none", borderRadius: "9999px",
+              fontWeight: 700, cursor: loading ? "not-allowed" : "pointer",
+              marginTop: "0.5rem", fontSize: "0.95rem",
+              boxShadow: "0 8px 20px rgba(16,185,129,0.3)",
+              transition: "all 0.2s",
+            }}
+          >
+            {loading ? "Signing in…" : "Sign In"}
           </button>
         </form>
-        
-        <p style={{ marginTop: "1.5rem", fontSize: "0.875rem", color: "#64748b" }}>
-          Don't have an account? <Link to="/signup" style={{ color: "#22c55e", textDecoration: "none" }}>Sign up</Link>
+
+        <p style={{ marginTop: "1.5rem", fontSize: "0.875rem", color: "#64748B" }}>
+          Don't have an account?{" "}
+          <Link to="/signup" style={{ color: "#10B981", textDecoration: "none", fontWeight: 600 }}>
+            Sign up
+          </Link>
         </p>
+
+        <div style={{
+          marginTop: "1.5rem", paddingTop: "1.25rem", borderTop: "1px solid #F1F5F9",
+          fontSize: "0.72rem", color: "#94A3B8",
+        }}>
+          Admin: <span style={{ color: "#10B981", fontWeight: 600 }}>admin@gmail.com</span> / admin@123
+        </div>
       </div>
     </div>
   );
