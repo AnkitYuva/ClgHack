@@ -3,7 +3,13 @@ import { useNavigate } from "react-router-dom";
 
 export default function Navbar({ title = "Dashboard" }) {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("ecosmart_user") || "{}");
+  let user = {};
+  try {
+    const raw = localStorage.getItem("ecosmart_user");
+    if (raw) user = JSON.parse(raw);
+  } catch (e) {
+    // catch JSON parsing errors
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("ecosmart_token");

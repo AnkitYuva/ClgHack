@@ -11,7 +11,12 @@ import UserDashboard from "./pages/UserDashboard";
 
 // Role-based Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const user = JSON.parse(localStorage.getItem("ecosmart_user"));
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem("ecosmart_user"));
+  } catch (e) {
+    user = null;
+  }
   const token = localStorage.getItem("ecosmart_token");
 
   if (!token || !user) {
@@ -28,6 +33,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 export default function App() {
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       
