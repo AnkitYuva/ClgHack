@@ -14,7 +14,8 @@ export default function UserDashboard() {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("ecosmart_user") || "null");
+  const userStr = localStorage.getItem("ecosmart_user");
+  const user = userStr ? JSON.parse(userStr) : null;
 
   useEffect(() => {
     if (!user) {
@@ -88,7 +89,7 @@ export default function UserDashboard() {
       map.remove();
       leafletMap.current = null;
     };
-  }, [user, navigate]);
+  }, [userStr, navigate]);
 
   const fetchRequests = async () => {
     try {
