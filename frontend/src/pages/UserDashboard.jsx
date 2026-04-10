@@ -51,6 +51,36 @@ export default function UserDashboard() {
         markerRef.current = L.marker([lat, lng], { icon }).addTo(map);
       }
     });
+    // HTML5 Geolocation to auto-center and place pin
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          
+          if (!leafletMap.current) return;
+          leafletMap.current.setView([lat, lng], 16);
+          setSelectedLocation({ lat, lng });
+
+          const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="46" viewBox="0 0 32 46">
+            <ellipse cx="16" cy="43" rx="7" ry="3" fill="#22c55e" opacity="0.2"/>
+            <path d="M16 2 C8 2 2 8 2 16 C2 28 16 44 16 44 C16 44 30 28 30 16 C30 8 24 2 16 2Z" fill="#22c55e" stroke="white" stroke-width="2"/>
+            <circle cx="16" cy="16" r="6" fill="white"/>
+          </svg>`;
+          const icon = L.divIcon({ html: svg, className: "", iconSize: [32, 46], iconAnchor: [16, 44] });
+          
+          if (markerRef.current) {
+            markerRef.current.setLatLng([lat, lng]);
+          } else {
+            markerRef.current = L.marker([lat, lng], { icon }).addTo(leafletMap.current);
+          }
+        },
+        (error) => {
+          console.log("Geolocation error:", error);
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+    }
 
     fetchRequests();
     
@@ -116,9 +146,9 @@ export default function UserDashboard() {
           
           <div style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: "8px", padding: "1rem", marginBottom: "1.5rem" }}>
             <p style={{ fontSize: "0.8rem", color: "#e2e8f0", marginBottom: "1rem" }}>
-              1. Click anywhere on the map to mark your location.<br/><br/>
-              2. Select waste type.<br/><br/>
-              3. Submit your request directly to the municipal routing system.
+              1. <b>Auto-Location:</b> We'll try to find you automatically.<br/><br/>
+              2. <b>Manual Override:</b> Alternatively, click anywhere on the map to pinpoint your garbage location.<br/><br/>
+              3. Select waste type and submit your request directly to the routing system.
             </p>
 
             <select 
@@ -171,8 +201,8 @@ export default function UserDashboard() {
       <div style={{ flex: 1, position: "relative" }}>
         <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
         {!selectedLocation && (
-          <div style={{ position: "absolute", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 1000, background: "rgba(2,6,23,0.8)", border: "1px solid rgba(34,197,94,0.3)", color: "white", padding: "0.5rem 1rem", borderRadius: "9999px", fontSize: "0.8rem", fontWeight: 600 }}>
-            📍 Click on the map to set your pickup location
+          <div style={{ position: "absolute", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 1000, background: "rgba(2,6,23,0.8)", border: "1px solid rgba(34,197,94,0.3)", color: "white", padding: "0.5rem 1rem", borderRadius: "9999px", fontSize: "0.8rem", fontWeight: 600, display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            <span style={{ animation: "spin 2s linear infinite", display: "inline-block" }}>⏳</span> Fetching GPS... or click map to manually plot
           </div>
         )}
       </div>
