@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Canvas, useFrame } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
 import api from "../../services/api";
 
 /* ════════════════════════════════════════════════════════════════
@@ -173,23 +174,20 @@ function lerpLatLng(a, b, t) {
 ════════════════════════════════════════════════════════════════ */
 function Truck3D({ angleRef }) {
   const ref = useRef();
+  const { scene } = useGLTF("/garbage_truck.glb");
+  
   useFrame((state) => {
     if (!ref.current) return;
+    // Apply path direction
     ref.current.rotation.y = -(angleRef.current ?? 0);
+    // Add subtle bounce effect while driving
     ref.current.position.y = Math.sin(state.clock.elapsedTime * 15) * 0.03;
   });
+  
   return (
-    <group ref={ref} scale={1.8}>
-      <mesh position={[0, 0.18, 0.15]}>
-        <boxGeometry args={[0.35, 0.28, 0.32]} />
-        <meshStandardMaterial color="#22c55e" emissive="#16a34a" emissiveIntensity={0.3} roughness={0.35} metalness={0.65} />
-      </mesh>
-      <mesh position={[0, 0.14, -0.18]}>
-        <boxGeometry args={[0.38, 0.22, 0.42]} />
-        <meshStandardMaterial color="#0f172a" roughness={0.3} metalness={0.8} />
-      </mesh>
-      <pointLight color="#22c55e" intensity={6} distance={3} position={[0.1, 0.1, 0.35]} />
-      <pointLight color="#22c55e" intensity={6} distance={3} position={[-0.1, 0.1, 0.35]} />
+    <group ref={ref} scale={0.4}>
+      <primitive object={scene} />
+      <pointLight color="#22c55e" intensity={4} distance={3} position={[0, 0.5, 1]} />
     </group>
   );
 }
