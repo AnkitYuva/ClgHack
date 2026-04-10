@@ -113,9 +113,7 @@ export default function UserDashboard() {
         formData.append("waste_type", wasteType);
         formData.append("image", imageFile);
         
-        await api.post("/requests", formData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
+        await api.post("/requests", formData);
       } else {
         await api.post("/requests", {
           user_id: user.id,
