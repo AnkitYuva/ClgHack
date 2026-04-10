@@ -52,22 +52,22 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  // Use live data if available, otherwise fallback to mock data
-  const currentStats = liveStats ? {
-    totalBins: liveStats.total_bins,
-    fullBins: liveStats.full_bins,
-    overflowBins: liveStats.overflow_bins,
-    activeAlerts: liveStats.active_alerts,
+  // Use live data strictly, defaulting to 0 while loading
+  const currentStats = {
+    totalBins: liveStats?.total_bins || 0,
+    fullBins: liveStats?.full_bins || 0,
+    overflowBins: liveStats?.overflow_bins || 0,
+    activeAlerts: liveStats?.active_alerts || 0,
     recycledToday: mockStats.recycledToday,
     efficiencyScore: mockStats.efficiencyScore
-  } : mockStats;
+  };
 
-  const currentAlerts = liveAlerts || mockAlerts;
+  const currentAlerts = liveAlerts || [];
   
   // Transform backend bin structure to match frontend component needs
   const currentTopBins = liveTopBins 
-    ? liveTopBins.map(b => ({ id: b.id, name: b.name, level: b.fill_level }))
-    : mockBins.filter(b => b.level >= 78).slice(0, 4);
+    ? liveTopBins.map(b => ({ id: b.id, name: b.name || "Unknown Bin", level: b.fill_level || 100 }))
+    : [];
 
   return (
     <PageLayout title="Dashboard">
@@ -119,7 +119,7 @@ export default function Dashboard() {
             <span style={{ fontSize: "0.6rem", color: "#06b6d4", fontWeight: 800, padding: "2px 6px", border: "1px solid rgba(6,182,212,0.4)", borderRadius: "4px", background: "rgba(6,182,212,0.1)" }}>LIVE</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-            {currentTopBins.map(bin => {
+            {currentTopBins.length > 0 ? currentTopBins.map(bin => {
               const color = bin.level >= 95 ? "#ef4444" : bin.level >= 80 ? "#f97316" : "#eab308";
               return (
                 <div key={bin.id}>
@@ -132,7 +132,11 @@ export default function Dashboard() {
                   </div>
                 </div>
               );
-            })}
+            }) : (
+              <div style={{ padding: "1.5rem", textAlign: "center", color: "#64748b", fontSize: "0.8rem" }}>
+                No active bin requests
+              </div>
+            )}
           </div>
         </GlassCard>
       </div>
